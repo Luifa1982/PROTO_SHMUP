@@ -16,13 +16,14 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0 ,0 ,255)
 YELLOW = (255, 255, 0)
-
+#Atributos meteoro
+METEOR_SIZES = [20, 40, 40, 60]
 
 #Atributos Player
 HITBOX = (20, 20)
 SPEED  = 8
-BULLET_WIDTH = 8#debería ser variable si el player sube de nivel el arma...
-
+BULLET_WIDTH = 8 #debería ser variable si el player sube de nivel el arma...
+SPREAD = [-4, -2, 0, 2, 4]
 pygame.init() #requiere pygame.quit() al final
 pygame.mixer.init() #inicializa sonido
 WIDTH = 480
@@ -68,7 +69,8 @@ class Player(pygame.sprite.Sprite):
             current_time_spread = pygame.time.get_ticks()
             if current_time_spread - self.last_bullet_shot > 120:
                 self.last_bullet_shot = current_time_spread
-                for i in range(-BULLET_WIDTH//2, BULLET_WIDTH//2 + 4, 3):
+                #for i in range(-BULLET_WIDTH//2, BULLET_WIDTH//2 + 4, 3):
+                for i in SPREAD:
                     b = bullet(self.rect.centerx, self.rect.top, i)
                     all_bullets.add(b)
                     all_sprites.add(b)
@@ -118,10 +120,10 @@ class Player(pygame.sprite.Sprite):
 class Meteoro(pygame.sprite.Sprite):
     '''Atributos de los meteoros'''
 
-    def __init__(self):
+    def __init__(self, size):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((40, 40))
-        self.image.fill(RED)
+        self.image = pygame.transform.scale(meteor_img, (size, size))
+        #self.image.fill(RED)
         self.rect = self.image.get_rect()
         self.rect.x = random.randrange(0, BORDE_RIGHT - self.rect.width)
         self.rect.y = random.randrange(0, BORDE_TOP)
@@ -167,7 +169,7 @@ class bullet(pygame.sprite.Sprite):#Funciona, falta rotar balas, falta que modo 
 
 #Funciones
 def spawn_new_meteor():
-    m = Meteoro()
+    m = Meteoro(random.choice(METEOR_SIZES))
     all_meteors.add(m)
     all_sprites.add(m)
 
@@ -180,7 +182,7 @@ background = get_image("background.png")
 background_rect = background.get_rect()
 player_img = get_image("playership.png")
 laser_img = get_image("laser.png")
-
+meteor_img = get_image("asteroid.png")
 
 #Sprites
 all_sprites = pygame.sprite.Group() #Contenedor para TOODOS los sprites
@@ -190,7 +192,7 @@ nave = Player()
 all_sprites.add(nave)
 
 for i in range(9):
-    m = Meteoro()
+    m = Meteoro(random.choice(METEOR_SIZES))
     all_meteors.add(m)
     all_sprites.add(m)
 
