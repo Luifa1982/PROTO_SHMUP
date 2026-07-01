@@ -9,8 +9,9 @@ El juego consiste en llegar al final del mismo, sobreviviendo el ataque de disti
 Controlamos una nave en las 2 direcciones de movimiento, arriba/abajo, izquierda/derecha. Y con los botones podemos disparar un laser o tirar una bomba.
 
 TODO
+-pantalla principal, con menus: JUGAR, CREDITOS, SALIR
 -explosiones
--transición de escenas (titulo, juego, game over, etc)
+-transición de escenas (titulo, juego, game over, etc) Gamestate Manager
 -sonido y música
 -score
 -perder vida y respawnear
