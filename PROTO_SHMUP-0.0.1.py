@@ -5,6 +5,7 @@
 import pygame
 import time
 import random
+from os import path
 
 #Constantes Generales
 TITULO = 'Prototipo'
@@ -35,6 +36,8 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption(TITULO)
 clock = pygame.time.Clock()
 FPS = 60
+game_folder = path.dirname(__file__)
+img_folder = path.join(game_folder, "img")
 
 #clases
 class Player(pygame.sprite.Sprite):
@@ -42,8 +45,8 @@ class Player(pygame.sprite.Sprite):
 
     def __init__(self):
         pygame.sprite.Sprite.__init__( self)
-        self.image = pygame.Surface(HITBOX)
-        self.image.fill(GREEN)
+        self.image = pygame.transform.scale(player_img, (32, 48))
+        #self.image.fill(GREEN)
         self.rect = self.image.get_rect()
         self.rect.centerx = WIDTH/2
         self.rect.y = int(HEIGHT*0.95)
@@ -57,7 +60,7 @@ class Player(pygame.sprite.Sprite):
         current_time = pygame.time.get_ticks()#configuración autodisparo
         if current_time - self.last_bullet_shot > 100:
             self.last_bullet_shot = current_time
-            b = bullet(self.rect.centerx, self.rect.top)
+            b = bullet(self.rect.centerx, self.rect.top, 0)
             all_bullets.add(b)
             all_sprites.add(b)
 
@@ -66,7 +69,7 @@ class Player(pygame.sprite.Sprite):
             if current_time_spread - self.last_bullet_shot > 120:
                 self.last_bullet_shot = current_time_spread
                 for i in range(-BULLET_WIDTH//2, BULLET_WIDTH//2 + 4, 3):
-                    b = spread_bullet(self.rect.centerx, self.rect.top, i)
+                    b = bullet(self.rect.centerx, self.rect.top, i)
                     all_bullets.add(b)
                     all_sprites.add(b)
 
@@ -142,24 +145,14 @@ class Meteoro(pygame.sprite.Sprite):
         self.rect.x += self.speed_x
         self.bordes()
         
-class bullet(pygame.sprite.Sprite):
-    def __init__(self, x, y): #s e y representan el centro de la nave
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((5, 10))
-        self.image.fill(YELLOW)
-        self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
 
-        self.speed_y = -10
-    def update(self):
-        self.rect.y += self.speed_y * 1.5
 
-class spread_bullet(pygame.sprite.Sprite):#Funciona, falta rotar balas, falta que modo laser no lo pise tanto
+class bullet(pygame.sprite.Sprite):#Funciona, falta rotar balas, falta que modo laser no lo pise tanto
     def __init__(self, x, y, bullet_x_speed): #s e y representan el centro de la nave
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((5, 10))
-        self.image.fill(YELLOW)
+        #self.image = pygame.Surface((5, 10))
+        self.image = laser_img
+        #self.image.fill(YELLOW)
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -177,6 +170,16 @@ def spawn_new_meteor():
     m = Meteoro()
     all_meteors.add(m)
     all_sprites.add(m)
+
+def get_image(filename):
+    img = pygame.image.load(path.join(img_folder, filename)).convert_alpha()
+    return img
+#Imagenes
+#background = pygame.image.load(path.join(img_folder, "background.png")).convert()
+background = get_image("background.png")
+background_rect = background.get_rect()
+player_img = get_image("playership.png")
+laser_img = get_image("laser.png")
 
 
 #Sprites
@@ -218,7 +221,8 @@ while running:
     if bullet_collision:
         spawn_new_meteor()
     #Dibuja en pantalla
-    screen.fill(BLACK)
+    #screen.fill(BLACK)
+    screen.blit(background, background_rect)
     all_sprites.draw(screen)
     #Actualiza después de dibujar todo en pantalla
     pygame.display.update()
